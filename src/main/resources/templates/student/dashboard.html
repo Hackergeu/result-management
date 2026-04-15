@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Student Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<div class="sidebar sidebar-student">
+    <div class="sidebar-header">
+        <h5>Student Portal</h5>
+        <p th:text="${student.user.name}">Student Name</p>
+    </div>
+    <div class="sidebar-nav">
+        <a href="/student/dashboard" class="active">My Results</a>
+    </div>
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</div>
+
+<div class="main-content">
+    <div class="welcome-banner" style="background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);">
+        <h4>Welcome, <span th:text="${student.user.name}"></span>!</h4>
+        <p>Roll No: <span th:text="${student.rollNumber}"></span>
+            &nbsp;|&nbsp; Class: <span th:text="${student.classRoom.name + ' ' + student.classRoom.section}"></span></p>
+    </div>
+
+    <div class="content-card">
+        <div class="content-card-header">
+            <h5>Your Results</h5>
+            <a href="/student/marksheet/download" class="btn btn-primary btn-sm">
+                Download Marksheet PDF
+            </a>
+        </div>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Max Marks</th>
+                <th>Marks Obtained</th>
+                <th>Grade</th>
+                <th>Status</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="r : ${results}">
+                <td th:text="${r.subject.name}"></td>
+                <td th:text="${r.subject.maxMarks}"></td>
+                <td th:text="${r.marksObtained}"></td>
+                <td><span class="badge-grade" th:text="${r.grade}"></span></td>
+                <td>
+                    <span th:if="${r.isPassed}" class="badge-pass">Pass</span>
+                    <span th:if="${!r.isPassed}" class="badge-fail">Fail</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
