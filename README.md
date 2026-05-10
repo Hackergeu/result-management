@@ -1,17 +1,32 @@
 # 🏫 School Result Management System
 
-A full-stack web application built with **Spring Boot** and **MySQL** that allows schools to manage student results, grades and marksheets digitally with role-based access control.
+A full-stack web application built with **Spring Boot** and **MySQL** that allows schools to manage student results, grades and marksheets digitally with role-based access control and a professional dark-themed UI.
 
 ---
 
 ## ✨ Features
 
-- **Role-based login** — separate dashboards for Admin, Teacher and Student
-- **Admin** can manage students, teachers, classes and subjects
-- **Teacher** can enter marks — grades are calculated automatically
-- **Student** can view results and download PDF marksheet
-- **PDF Marksheet** generation using iText 7
+- **Animated role-selection login page** — Admin, Teacher and Student each with their own card
+- **Role-based login** — separate dark-themed dashboards for each role
+- **Admin** can manage students, teachers, classes and subjects with a dark navy dashboard and Chart.js bar chart
+- **Teacher** can enter marks — grades are calculated automatically, subject cards with dynamic icons
+- **Student** can view results with percentage stats and download PDF marksheet
+- **PDF Marksheet** generation using iText 7 — color coded grades and pass/fail
 - **Spring Security** with BCrypt password hashing and CSRF protection
+
+---
+
+## 🎨 UI Design
+
+Each role has its own professional dark theme with a distinct accent color:
+
+| Role | Theme | Accent Color |
+|---|---|---|
+| Admin | Dark Navy | Blue |
+| Teacher | Dark Green | Emerald |
+| Student | Dark Purple | Violet |
+
+All portals share the same design language — fixed sidebar, top navbar with profile, stat cards, dark tables and welcome banners.
 
 ---
 
@@ -23,6 +38,7 @@ A full-stack web application built with **Spring Boot** and **MySQL** that allow
 | Security | Spring Security, BCrypt |
 | Database | MySQL 8, Spring Data JPA |
 | Frontend | Thymeleaf, HTML, CSS, Bootstrap 5 |
+| Charts | Chart.js |
 | PDF | iText 7 |
 | Build | Maven |
 
@@ -63,17 +79,19 @@ http://localhost:8080/login
 
 ## 🔑 Default Login Credentials
 
-Admin account is created automatically on first startup.
+Admin account is created automatically on first startup by `DataInitializer.java`.
 
-| Role | Email                     | Password     |
-|---|---------------------------|--------------|
-| Admin | vanshagarwal953@gmail.com | HackerGeu    |
-| Teacher | Created by Admin          | Set by Admin |
-| Student | Created by Admin          | Set by Admin |
+| Role | Email | Password |
+|---|---|---|
+| Admin | vanshagarwal953@gmail.com | HackerGeu |
+| Teacher | Created by Admin | Set by Admin |
+| Student | Created by Admin | Set by Admin |
 
 ---
 
 ## 📊 Grade Calculation Logic
+
+Calculated automatically in `ResultService.java` when marks are saved:
 
 | Percentage | Grade |
 |---|---|
@@ -86,12 +104,28 @@ Admin account is created automatically on first startup.
 
 ---
 
+## 🗃️ Database Schema
+
+```
+users        — id, name, email, password, role
+students     — id, user_id (FK), classroom_id (FK), rollNumber, phone
+teachers     — id, user_id (FK), employeeCode, department
+classrooms   — id, name, section, academicYear
+subjects     — id, name, maxMarks, passingMarks, teacher_id (FK), classroom_id (FK)
+results      — id, student_id (FK), subject_id (FK), marksObtained, grade, isPassed
+```
+
+Tables are auto-created by Hibernate on first run — no SQL scripts needed.
+
+---
+
 ## 🔒 Security
 
 - Passwords hashed with **BCrypt** — never stored as plain text
 - Role-based URL protection — `/admin/**`, `/teacher/**`, `/student/**`
 - CSRF tokens on every form
 - Unauthorized access redirects to access-denied page
+- Each role sees only its own data
 
 ---
 
@@ -101,6 +135,7 @@ Admin account is created automatically on first startup.
 - [ ] Docker support
 - [ ] Attendance tracking
 - [ ] Email notifications for results
+- [ ] REST API layer for mobile app integration
 
 ---
 
@@ -108,5 +143,4 @@ Admin account is created automatically on first startup.
 
 **Vansh Agarwal**
 - GitHub: [Hackergeu](https://github.com/Hackergeu)
-
 - Email: vanshagarwal953@gmail.com

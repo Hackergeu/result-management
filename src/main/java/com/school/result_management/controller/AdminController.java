@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
@@ -23,10 +25,19 @@ public class AdminController {
     // ── DASHBOARD ──────────────────────────────
     @GetMapping("/dashboard")
     public String dashboard(Model model) {
-        model.addAttribute("totalStudents", adminService.getAllStudents().size());
+        List<Student> allStudents = adminService.getAllStudents();
+
+        model.addAttribute("totalStudents", allStudents.size());
         model.addAttribute("totalTeachers", adminService.getAllTeachers().size());
         model.addAttribute("totalClasses", adminService.getAllClasses().size());
         model.addAttribute("totalSubjects", adminService.getAllSubjects().size());
+
+        // Show last 5 students on dashboard
+        List<Student> recentStudents = allStudents.stream()
+                .skip(Math.max(0, allStudents.size() - 5))
+                .collect(java.util.stream.Collectors.toList());
+
+        model.addAttribute("recentStudents", recentStudents);
         return "admin/dashboard";
     }
 
