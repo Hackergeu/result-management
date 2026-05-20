@@ -2,221 +2,330 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login — School Result System</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0a0f1e;
             min-height: 100vh;
             display: flex;
-            font-family: 'Segoe UI', sans-serif;
-            background: #f0f2f5;
         }
 
-        /* ── Left Panel ── */
+        /* ── Left Panel ───────────────────────────── */
         .left-panel {
-            width: 55%;
-            background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
+            width: 45%;
+            background: #0d1424;
+            border-right: 1px solid rgba(99,179,237,0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 60px;
+            padding: 60px 50px;
             position: relative;
             overflow: hidden;
+            transition: background 0.5s ease;
         }
 
+        /* Decorative circles */
         .left-panel::before {
             content: '';
             position: absolute;
             width: 400px; height: 400px;
-            background: rgba(255,255,255,0.05);
             border-radius: 50%;
-            top: -100px; left: -100px;
+            top: -120px; left: -120px;
+            transition: background 0.5s ease;
         }
 
         .left-panel::after {
             content: '';
             position: absolute;
             width: 300px; height: 300px;
-            background: rgba(255,255,255,0.05);
             border-radius: 50%;
             bottom: -80px; right: -80px;
+            transition: background 0.5s ease;
         }
 
-        .left-panel .school-icon {
+        /* Default — Admin blue */
+        .left-panel.admin-glow::before  { background: rgba(59,130,246,0.08); }
+        .left-panel.admin-glow::after   { background: rgba(59,130,246,0.05); }
+        .left-panel.teacher-glow::before{ background: rgba(16,185,129,0.08); }
+        .left-panel.teacher-glow::after { background: rgba(16,185,129,0.05); }
+        .left-panel.student-glow::before{ background: rgba(139,92,246,0.08); }
+        .left-panel.student-glow::after { background: rgba(139,92,246,0.05); }
+
+        .panel-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .panel-icon {
             font-size: 72px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
+            display: block;
         }
 
-        .left-panel h1 {
-            color: white;
-            font-size: 28px;
+        .panel-content h1 {
+            font-size: 22px;
             font-weight: 700;
-            text-align: center;
-            margin-bottom: 12px;
-            line-height: 1.3;
+            color: white;
+            margin-bottom: 10px;
+            line-height: 1.4;
         }
 
-        .left-panel p {
-            color: rgba(255,255,255,0.75);
-            font-size: 15px;
-            text-align: center;
-            max-width: 340px;
+        .panel-content p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.45);
+            margin-bottom: 36px;
             line-height: 1.7;
+            max-width: 300px;
         }
 
         .features {
-            margin-top: 40px;
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
             width: 100%;
-            max-width: 320px;
+            max-width: 300px;
+            margin: 0 auto;
         }
 
         .feature-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            color: rgba(255,255,255,0.85);
-            font-size: 14px;
+            text-align: left;
         }
 
         .feature-dot {
-            width: 8px; height: 8px;
-            background: #93c5fd;
-            border-radius: 50%;
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
             flex-shrink: 0;
+            transition: background 0.5s ease, border-color 0.5s ease;
         }
 
-        /* ── Right Panel ── */
+        .feature-text {
+            font-size: 13px;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.5;
+        }
+
+        /* Feature dot colors per role */
+        .admin-dot   { background: rgba(59,130,246,0.15); border: 1px solid rgba(59,130,246,0.2); }
+        .teacher-dot { background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.2); }
+        .student-dot { background: rgba(139,92,246,0.15); border: 1px solid rgba(139,92,246,0.2); }
+
+        /* ── Right Panel ──────────────────────────── */
         .right-panel {
-            width: 45%;
+            width: 55%;
+            background: #0a0f1e;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 60px 50px;
-            background: white;
         }
 
         .login-box {
             width: 100%;
-            max-width: 380px;
+            max-width: 420px;
+        }
+
+        /* Top branding */
+        .brand-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 36px;
+        }
+
+        .brand-logo {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: background 0.5s ease;
+        }
+
+        .brand-logo.admin-logo   { background: linear-gradient(135deg, #1e3a8a, #3b82f6); }
+        .brand-logo.teacher-logo { background: linear-gradient(135deg, #065f46, #059669); }
+        .brand-logo.student-logo { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+
+        .brand-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
         }
 
         .login-box h2 {
             font-size: 26px;
             font-weight: 700;
-            color: #1e293b;
+            color: white;
             margin-bottom: 6px;
         }
 
         .login-box .subtitle {
-            color: #64748b;
-            font-size: 14px;
-            margin-bottom: 36px;
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 28px;
         }
 
+        /* Role tabs */
         .role-tabs {
             display: flex;
             gap: 8px;
             margin-bottom: 28px;
+            background: #0d1424;
+            border: 1px solid rgba(99,179,237,0.1);
+            border-radius: 10px;
+            padding: 4px;
         }
 
         .role-tab {
             flex: 1;
             padding: 8px;
+            border-radius: 7px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.4);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .role-tab:hover { color: rgba(255,255,255,0.7); }
+
+        .role-tab.active-admin {
+            background: linear-gradient(135deg,
+                rgba(59,130,246,0.2), rgba(59,130,246,0.1));
+            color: #60a5fa;
+            border: 1px solid rgba(59,130,246,0.2);
+        }
+
+        .role-tab.active-teacher {
+            background: linear-gradient(135deg,
+                rgba(16,185,129,0.2), rgba(16,185,129,0.1));
+            color: #34d399;
+            border: 1px solid rgba(16,185,129,0.2);
+        }
+
+        .role-tab.active-student {
+            background: linear-gradient(135deg,
+                rgba(139,92,246,0.2), rgba(139,92,246,0.1));
+            color: #a78bfa;
+            border: 1px solid rgba(139,92,246,0.2);
+        }
+
+        /* Role indicator strip */
+        .role-indicator {
+            padding: 10px 14px;
             border-radius: 8px;
-            border: 1.5px solid #e2e8f0;
-            text-align: center;
             font-size: 12px;
             font-weight: 500;
-            color: #64748b;
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-
-        .role-tab.active-tab {
-            border-color: #1e3a8a;
-            background: #eff6ff;
-            color: #1e3a8a;
-        }
-
-        .form-group {
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
         }
+
+        .ind-admin   { background: rgba(59,130,246,0.1); color: #60a5fa; border: 1px solid rgba(59,130,246,0.2); }
+        .ind-teacher { background: rgba(16,185,129,0.1); color: #34d399; border: 1px solid rgba(16,185,129,0.2); }
+        .ind-student { background: rgba(139,92,246,0.1); color: #a78bfa; border: 1px solid rgba(139,92,246,0.2); }
+
+        /* Form fields */
+        .form-group { margin-bottom: 16px; }
 
         .form-group label {
             display: block;
-            font-size: 13px;
-            font-weight: 500;
-            color: #374151;
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.4);
             margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
         }
 
         .form-group input {
             width: 100%;
             padding: 11px 14px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #1e293b;
-            transition: border-color 0.15s, box-shadow 0.15s;
+            background: #0d1424;
+            border: 1px solid rgba(99,179,237,0.15);
+            border-radius: 8px;
+            color: white;
+            font-size: 13px;
             outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            font-family: 'Segoe UI', sans-serif;
         }
+
+        .form-group input::placeholder { color: rgba(255,255,255,0.2); }
 
         .form-group input:focus {
-            border-color: #1e3a8a;
-            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
+            border-color: rgba(59,130,246,0.5);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.08);
         }
 
+        /* Login button */
         .login-btn {
             width: 100%;
             padding: 12px;
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 15px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: opacity 0.15s;
-            margin-top: 8px;
+            margin-top: 6px;
+            transition: opacity 0.15s, background 0.4s;
+            font-family: 'Segoe UI', sans-serif;
         }
 
-        .login-btn:hover { opacity: 0.92; }
+        .login-btn:hover { opacity: 0.88; }
 
+        .btn-admin   { background: linear-gradient(135deg, #1e3a8a, #3b82f6); }
+        .btn-teacher { background: linear-gradient(135deg, #065f46, #059669); }
+        .btn-student { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+
+        /* Alert messages */
         .alert-box {
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 13px;
-            margin-bottom: 20px;
+            padding: 11px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-bottom: 18px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .alert-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
+            background: rgba(239,68,68,0.1);
+            color: #f87171;
+            border: 1px solid rgba(239,68,68,0.2);
         }
 
         .alert-success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
+            background: rgba(16,185,129,0.1);
+            color: #34d399;
+            border: 1px solid rgba(16,185,129,0.2);
         }
 
         .footer-text {
             text-align: center;
-            margin-top: 28px;
-            font-size: 12px;
-            color: #94a3b8;
+            margin-top: 24px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.2);
         }
 
-        /* ── Responsive ── */
         @media (max-width: 768px) {
             .left-panel { display: none; }
             .right-panel { width: 100%; padding: 40px 24px; }
@@ -226,27 +335,31 @@
 <body>
 
 <!-- Left Panel -->
-<div class="left-panel">
-    <div class="school-icon">🏫</div>
-    <h1>School Result Management System</h1>
-    <p>A complete solution for managing student results, grades and marksheets digitally.</p>
-
-    <div class="features">
-        <div class="feature-item">
-            <div class="feature-dot"></div>
-            Role-based access for Admin, Teachers and Students
-        </div>
-        <div class="feature-item">
-            <div class="feature-dot"></div>
-            Auto grade calculation and pass/fail status
-        </div>
-        <div class="feature-item">
-            <div class="feature-dot"></div>
-            Instant PDF marksheet generation and download
-        </div>
-        <div class="feature-item">
-            <div class="feature-dot"></div>
-            Secure login with Spring Security and BCrypt
+<div class="left-panel admin-glow" id="leftPanel">
+    <div class="panel-content" id="panelContent">
+        <span class="panel-icon" id="panelIcon">👨‍💼</span>
+        <h1 id="panelTitle">Admin Portal</h1>
+        <p id="panelDesc">
+            Manage the entire school system — students, teachers,
+            subjects, classes and results all in one place.
+        </p>
+        <div class="features" id="featureList">
+            <div class="feature-item">
+                <div class="feature-dot admin-dot">📊</div>
+                <span class="feature-text">Real-time dashboard with Chart.js</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-dot admin-dot">🎓</div>
+                <span class="feature-text">Manage students, teachers and classes</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-dot admin-dot">📄</div>
+                <span class="feature-text">Download PDF marksheets for any student</span>
+            </div>
+            <div class="feature-item">
+                <div class="feature-dot admin-dot">🔒</div>
+                <span class="feature-text">Secure access with Spring Security</span>
+            </div>
         </div>
     </div>
 </div>
@@ -255,37 +368,59 @@
 <div class="right-panel">
     <div class="login-box">
 
-        <h2>Welcome back 👋</h2>
-        <p class="subtitle">Sign in to your account to continue</p>
-
-        <!-- Role indicator tabs -->
-        <div class="role-tabs">
-            <div class="role-tab active-tab">Admin</div>
-            <div class="role-tab">Teacher</div>
-            <div class="role-tab">Student</div>
+        <!-- Brand -->
+        <div class="brand-row">
+            <div class="brand-logo admin-logo" id="brandLogo">🏫</div>
+            <span class="brand-name">School Result System</span>
         </div>
 
-        <!-- Error message -->
+        <h2>Welcome back 👋</h2>
+        <p class="subtitle">Select your role and sign in to continue</p>
+
+        <!-- Role Tabs -->
+        <div class="role-tabs">
+            <button class="role-tab active-admin"
+                    id="tab-admin"
+                    onclick="switchRole('admin')">
+                👨‍💼 Admin
+            </button>
+            <button class="role-tab"
+                    id="tab-teacher"
+                    onclick="switchRole('teacher')">
+                👨‍🏫 Teacher
+            </button>
+            <button class="role-tab"
+                    id="tab-student"
+                    onclick="switchRole('student')">
+                🎓 Student
+            </button>
+        </div>
+
+        <!-- Role Indicator -->
+        <div class="role-indicator ind-admin" id="roleIndicator">
+            👨‍💼 &nbsp; Signing in as Admin
+        </div>
+
+        <!-- Error -->
         <div th:if="${param.error}" class="alert-box alert-error">
             ✗ &nbsp; Invalid email or password. Please try again.
         </div>
 
-        <!-- Logout success message -->
+        <!-- Logout -->
         <div th:if="${param.logout}" class="alert-box alert-success">
             ✓ &nbsp; You have been logged out successfully.
         </div>
 
         <!-- Login Form -->
         <form th:action="@{/login}" method="post">
-
             <div class="form-group">
                 <label>Email Address</label>
                 <input type="email"
                        name="username"
+                       id="emailInput"
                        placeholder="Enter your email"
                        required autofocus>
             </div>
-
             <div class="form-group">
                 <label>Password</label>
                 <input type="password"
@@ -293,11 +428,11 @@
                        placeholder="Enter your password"
                        required>
             </div>
-
-            <button type="submit" class="login-btn">
-                Sign In →
+            <button type="submit"
+                    class="login-btn btn-admin"
+                    id="loginBtn">
+                Sign in as Admin →
             </button>
-
         </form>
 
         <p class="footer-text">
@@ -306,6 +441,135 @@
 
     </div>
 </div>
+
+<script>
+    const roles = {
+        admin: {
+            glow:          'admin-glow',
+            icon:          '👨‍💼',
+            title:         'Admin Portal',
+            desc:          'Manage the entire school system — students, teachers, subjects, classes and results all in one place.',
+            dotClass:      'admin-dot',
+            features: [
+                { icon: '📊', text: 'Real-time dashboard with Chart.js' },
+                { icon: '🎓', text: 'Manage students, teachers and classes' },
+                { icon: '📄', text: 'Download PDF marksheets for any student' },
+                { icon: '🔒', text: 'Secure access with Spring Security' }
+            ],
+            tabClass:      'active-admin',
+            indicator:     'ind-admin',
+            indicatorText: '👨‍💼 &nbsp; Signing in as Admin',
+            btnClass:      'btn-admin',
+            btnText:       'Sign in as Admin →',
+            logoClass:     'admin-logo',
+            placeholder:   'admin@school.com'
+        },
+        teacher: {
+            glow:          'teacher-glow',
+            icon:          '👨‍🏫',
+            title:         'Teacher Portal',
+            desc:          'Enter student marks, view your assigned subjects and track student performance easily.',
+            dotClass:      'teacher-dot',
+            features: [
+                { icon: '📚', text: 'View all your assigned subjects' },
+                { icon: '✅', text: 'Enter and update student marks' },
+                { icon: '📐', text: 'Auto grade calculation on save' },
+                { icon: '📊', text: 'Track total marks entered' }
+            ],
+            tabClass:      'active-teacher',
+            indicator:     'ind-teacher',
+            indicatorText: '👨‍🏫 &nbsp; Signing in as Teacher',
+            btnClass:      'btn-teacher',
+            btnText:       'Sign in as Teacher →',
+            logoClass:     'teacher-logo',
+            placeholder:   'teacher@school.com'
+        },
+        student: {
+            glow:          'student-glow',
+            icon:          '🎓',
+            title:         'Student Portal',
+            desc:          'View your subject-wise results, check your grades and download your official marksheet as a PDF.',
+            dotClass:      'student-dot',
+            features: [
+                { icon: '📋', text: 'View subject-wise marks and grades' },
+                { icon: '📊', text: 'See overall percentage and stats' },
+                { icon: '✓',  text: 'Check pass/fail status per subject' },
+                { icon: '📄', text: 'Download official PDF marksheet' }
+            ],
+            tabClass:      'active-student',
+            indicator:     'ind-student',
+            indicatorText: '🎓 &nbsp; Signing in as Student',
+            btnClass:      'btn-student',
+            btnText:       'Sign in as Student →',
+            logoClass:     'student-logo',
+            placeholder:   'student@school.com'
+        }
+    };
+
+    let currentRole = 'admin';
+
+    function switchRole(role) {
+        if (role === currentRole) return;
+        currentRole = role;
+        const r = roles[role];
+        const panel   = document.getElementById('leftPanel');
+        const content = document.getElementById('panelContent');
+
+        // Fade out
+        content.style.opacity   = '0';
+        content.style.transform = 'translateY(8px)';
+
+        setTimeout(() => {
+            // Update left panel glow
+            panel.className = 'left-panel ' + r.glow;
+
+            // Update panel content
+            document.getElementById('panelIcon').textContent  = r.icon;
+            document.getElementById('panelTitle').textContent = r.title;
+            document.getElementById('panelDesc').textContent  = r.desc;
+
+            // Update features
+            const fl = document.getElementById('featureList');
+            fl.innerHTML = r.features.map(f => `
+                <div class="feature-item">
+                    <div class="feature-dot ${r.dotClass}">${f.icon}</div>
+                    <span class="feature-text">${f.text}</span>
+                </div>
+            `).join('');
+
+            // Fade in
+            content.style.transition = 'opacity 0.35s ease, transform 0.35s ease';
+            content.style.opacity    = '1';
+            content.style.transform  = 'translateY(0)';
+
+            // Update right panel
+            const ind = document.getElementById('roleIndicator');
+            ind.className = 'role-indicator ' + r.indicator;
+            ind.innerHTML = r.indicatorText;
+
+            const btn = document.getElementById('loginBtn');
+            btn.className = 'login-btn ' + r.btnClass;
+            btn.textContent = r.btnText;
+
+            const logo = document.getElementById('brandLogo');
+            logo.className = 'brand-logo ' + r.logoClass;
+
+            document.getElementById('emailInput').placeholder = r.placeholder;
+
+            // Update tabs
+            ['admin', 'teacher', 'student'].forEach(id => {
+                document.getElementById('tab-' + id).className = 'role-tab';
+            });
+            document.getElementById('tab-' + role).className =
+                'role-tab ' + r.tabClass;
+
+        }, 200);
+    }
+
+    // Set initial transition
+    document.getElementById('panelContent').style.transition =
+        'opacity 0.2s ease, transform 0.2s ease';
+</script>
 
 </body>
 </html>
