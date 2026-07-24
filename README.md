@@ -55,13 +55,15 @@ cd result-management
 
 **Step 2 — Configure the database**
 
-Open `src/main/resources/application.properties` and update:
+Create a `.env` file in the project root:
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/school_db?createDatabaseIfNotExist=true
-spring.datasource.username=root
-spring.datasource.password=your_mysql_password
+```env
+DB_URL=jdbc:mysql://localhost:3306/school_db?createDatabaseIfNotExist=true
+DB_USERNAME=root
+DB_PASSWORD=your_mysql_password
 ```
+
+`application.properties` reads these via `${DB_URL}`, `${DB_USERNAME}` and `${DB_PASSWORD}` (loaded using `dotenv-java`), so no credentials are hardcoded in the source.
 
 **Step 3 — Run the application**
 
@@ -123,7 +125,7 @@ Tables are auto-created by Hibernate on first run — no SQL scripts needed.
 
 - Passwords hashed with **BCrypt** — never stored as plain text
 - Role-based URL protection — `/admin/**`, `/teacher/**`, `/student/**`
-- CSRF tokens on every form
+- CSRF protection via `CookieCsrfTokenRepository` with `XorCsrfTokenRequestAttributeHandler` — a cookie-based CSRF token setup (rather than the session-based default), so it's ready to also serve a future REST/mobile client
 - Unauthorized access redirects to access-denied page
 - Each role sees only its own data
 
